@@ -3,6 +3,7 @@ body, .modal-content, .admin-table-container {
     -webkit-overflow-scrolling: touch; /* Pour iOS/Webview */
     overflow-y: auto;
 }
+
 :root {
     --primary-color: #ff6b00;
     --secondary-color: #1e293b;
@@ -12,6 +13,7 @@ body, .modal-content, .admin-table-container {
     --warning-color: #f59e0b;
     --danger-color: #ef4444;
 }
+
 * {
     -webkit-tap-highlight-color: transparent; /* Supprime le flash bleu au clic */
     touch-action: manipulation; /* Optimise le zoom/scroll */
@@ -21,6 +23,7 @@ body, .modal-content, .admin-table-container {
 .qty-btn, .product-card button, .cta-button {
     min-height: 44px; /* Taille minimale recommandée pour le tactile */
 }
+
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
 body { background-color: var(--background-color); color: var(--text-color); }
 
@@ -43,7 +46,70 @@ header {
     padding: 8px 15px; border-radius: 20px; font-weight: 500;
 }
 
-/* --- NAV --- */
+/* --- CORRECTION DE LA NAVIGATION SUR MOBILE --- */
+@media (max-width: 768px) {
+    header {
+        flex-wrap: wrap;
+        padding: 0.5rem 3%;
+        gap: 8px;
+    }
+
+    .logo {
+        font-size: 1.2rem;
+    }
+
+    /* On adapte la barre de recherche sur mobile pour qu'elle prenne toute la largeur */
+    .search-bar {
+        order: 3;
+        width: 100%;
+        margin-top: 5px;
+    }
+    
+    .search-bar input {
+        width: 100%;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+
+    .cart-icon {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+
+    /* Transformation de la navigation en une barre d'onglets horizontale défilante */
+    .top-nav {
+        order: 4;
+        width: 100%;
+        display: flex;
+        overflow-x: auto;
+        gap: 5px;
+        padding-bottom: 5px;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 8px;
+    }
+
+    .top-nav::-webkit-scrollbar {
+        display: none; /* Cache la barre de défilement pour faire plus propre */
+    }
+
+    .top-nav button {
+        font-size: 0.85rem;
+        padding: 6px 10px;
+        background: #f1f5f9;
+        border-radius: 15px;
+        border-bottom: none !important; /* Supprime la bordure basse classique */
+        flex-shrink: 0;
+    }
+
+    .top-nav button.active {
+        background: var(--primary-color);
+        color: white;
+    }
+}
+
+/* --- NAV (Mode Bureau par défaut) --- */
 .top-nav { display: flex; gap: 10px; }
 .top-nav button {
     background: none; border: none; font-size: 1rem; font-weight: bold;
@@ -136,6 +202,8 @@ main { flex: 1; }
 
 footer { background: var(--secondary-color); color: white; text-align: center; padding: 20px; margin-top: 40px; }
 footer .contact-info { margin-bottom: 10px; }
+
+/* --- MEDIA QUERIES GLOBALES (MOBILE) --- */
 @media (max-width: 768px) {
     /* On empile le layout (Sidebar au-dessus du contenu) */
     .main-layout {
@@ -152,9 +220,5 @@ footer .contact-info { margin-bottom: 10px; }
     }
     .feature {
         min-width: 100%; /* Prend toute la largeur */
-    }
-    /* On ajuste la barre de recherche */
-    .search-bar input {
-        width: 100%; /* Prend toute la largeur disponible */
     }
 }
