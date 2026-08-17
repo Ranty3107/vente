@@ -1,0 +1,14 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "ranty",
+  "orientation": "any",
+  "scope": "/vente/",
+  "short_name": "ranty",
+  "start_url": "/vente/",
+  "theme_color": "#ffffff",
+  "id": "vente",
+  "description": "Application de gestion des ventes",
+  "lang": "fr"
+}
