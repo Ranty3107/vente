@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mora Style - Boutique en Ligne</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <button id="hamburger-btn" class="hamburger-btn">☰</button>
+        <div class="logo">Mora Style</div>
+        
+        <nav class="top-nav">
+            <button id="nav-home" class="active">Accueil</button>
+            <button id="nav-shop">Boutique</button>
+            <!-- Nouveaux boutons pour l'utilisateur connecté -->
+            <button id="nav-user-dashboard" class="hidden">📦 Mes Commandes</button>
+            <button id="nav-admin" class="admin-btn-nav hidden">🔒 Admin</button>
+            
+            <button id="nav-login" class="login-btn-nav">👤 Se connecter</button>
+            <button id="nav-logout" class="hidden">Déconnexion</button>
+        </nav>
+
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Rechercher un produit...">
+        </div>
+        <div class="cart-icon" id="cart-icon">
+            🛒 Panier (<span id="cart-count">0</span>)
+        </div>
+    </header>
+
+    <!-- ONGLET ACCUEIL -->
+    <section id="home-page" class="page-section">
+        <div class="hero-banner">
+            <img src="https://via.placeholder.com/150" alt="Logo de la boutique" class="hero-logo">
+            <div class="hero-content">
+                <h1>Bienvenue sur Mora Style</h1>
+                <p>Découvrez notre large gamme de produits du quotidien au meilleur prix, livrés directement chez vous.</p>
+                <button id="btn-go-shop" class="cta-button">Découvrir nos rayons</button>
+            </div>
+        </div>
+        
+        <div class="about-us">
+            <h2>Pourquoi nous choisir ?</h2>
+            <div class="features">
+                <div class="feature">✅ Produits frais et de qualité</div>
+                <div class="feature">🚚 Livraison rapide (Périphérie & Extérieurs)</div>
+                <div class="feature">💳 Paiement Mobile Money sécurisé</div>
+                <div class="feature">
+                    <a href="#" id="btn-about">🔍 Qui sommes-nous ?</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ONGLET BOUTIQUE -->
+    <section id="shop-page" class="page-section hidden">
+        <div class="main-layout">
+            <aside class="sidebar">
+                <h3>Rayons</h3>
+                <ul id="category-list">
+                    <li><a href="#" class="cat-link active" data-cat="all">Tous les produits</a></li>
+                </ul>
+            </aside>
+            <main>
+                <section class="products-grid" id="products-container">
+                    <p id="loading-msg">Chargement des rayons...</p>
+                </section>
+            </main>
+        </div>
+    </section>
+
+    <!-- ONGLET ESPACE UTILISATEUR (Mes Commandes) -->
+    <section id="user-dashboard-page" class="page-section hidden">
+        <div class="admin-container" style="max-width: 900px; margin: 20px auto;">
+            <h2>📦 Mon Historique de Commandes</h2>
+            <p style="text-align: center; margin-bottom: 20px; color: #555;">Retrouvez ici le statut en temps réel de vos achats.</p>
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Réf. Cmd</th>
+                            <th>Date</th>
+                            <th>Articles</th>
+                            <th>Total</th>
+                            <th>Statut Paiement</th>
+                            <th>Statut Livraison</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-orders-body">
+                        <!-- Les commandes de l'utilisateur s'afficheront ici -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ONGLET ESPACE ADMIN -->
+    <section id="admin-page" class="page-section hidden">
+        <div class="admin-container">
+            <h2>🔒 Tableau de bord Admin</h2>
+            <div id="admin-dashboard">
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Réf. Cmd</th>
+                                <th>Client & Adresse</th>
+                                <th>Articles</th>
+                                <th>Paiement & Réf SMS</th>
+                                <th>Total</th>
+                                <th>Statut Paiement</th>
+                                <th>Statut Livraison</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-orders-body">
+                            <!-- Les commandes s'afficheront ici -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODALE AUTHENTIFICATION (Connexion / Inscription) -->
+    <div id="auth-modal" class="modal hidden">
+        <!-- Contenu identique à avant -->
+        <div class="modal-content">
+            <span class="close-btn" id="close-auth">&times;</span>
+            <h2 id="auth-title">Connexion</h2>
+            
+            <div id="login-form" class="auth-form">
+                <input type="email" id="login-email" placeholder="Votre Email" required autocomplete="off">
+                <input type="password" id="login-pwd" placeholder="Votre Mot de passe" required autocomplete="new-password">
+                <button id="btn-login-submit" class="cta-button full-width">Se connecter</button>
+                <p class="auth-toggle">Pas encore de compte ? <a href="#" id="show-register">S'inscrire</a></p>
+            </div>
+
+            <div id="register-form" class="auth-form hidden">
+                <input type="text" id="reg-name" placeholder="Nom Complet" required>
+                <input type="email" id="reg-email" placeholder="Votre Email" required>
+                <input type="password" id="reg-pwd" placeholder="Créer un Mot de passe" required>
+                <button id="btn-register-submit" class="cta-button full-width">Créer mon compte</button>
+                <p class="auth-toggle">Déjà un compte ? <a href="#" id="show-login">Se connecter</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE "QUI SOMMES-NOUS ?" -->
+    <div id="about-modal" class="modal hidden">
+        <!-- Contenu identique -->
+        <div class="modal-content">
+            <span class="close-btn" id="close-about">&times;</span>
+            <h2>Qui sommes-nous ?</h2>
+            <div class="modal-body">
+                <h3>NOTRE HISTOIRE</h3>
+                <p>Fondée avec l'aspiration de transformer le paysage commercial à Madagascar, notre plateforme utilise l'innovation et la technologie comme leviers principaux pour simplifier le quotidien de nos clients.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE PANIER ET COMMANDE -->
+    <div id="cart-modal" class="modal hidden">
+        <!-- À ajouter dans la modale du panier (cart-modal), par exemple sous le champ 'Adresse' -->
+<div class="form-group" style="margin-top: 10px; margin-bottom: 10px;">
+    <button type="button" id="btn-get-location" style="background-color: #4285F4; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+        📍 Partager ma position exacte (Optionnel)
+    </button>
+    <p id="location-status" style="font-size: 0.9em; margin-top: 5px; font-weight: bold;"></p>
+</div>
+        <!-- Contenu identique à avant -->
+        <div class="modal-content modal-large">
+            <span class="close-btn" id="close-cart">&times;</span>
+            <h2>Mon Panier</h2>
+            
+            <div id="cart-items"></div>
+
+            <div class="checkout-section">
+                <h3>1. Informations de livraison</h3>
+                <div class="input-group">
+                    <input type="text" id="client-name" placeholder="Nom et Prénom *" required readonly>
+                    <input type="tel" id="client-phone" placeholder="Numéro de téléphone (ex: 0340000000) *" required>
+                    <input type="text" id="client-address" placeholder="Adresse exacte / Quartier *" required>
+                </div>
+
+                <h3>2. Zone de livraison</h3>
+                <div class="delivery-options">
+                    <label><input type="radio" name="delivery" value="3000" checked> Périphérie (3 000 Ar)</label>
+                    <label><input type="radio" name="delivery" value="5000"> Extérieurs (5 000 Ar)</label>
+                </div>
+
+                <h3>3. Paiement Mobile Money</h3>
+                <div class="payment-selection">
+                    <label><input type="radio" name="payment-method" value="MVola" checked> MVola</label>
+                    <label><input type="radio" name="payment-method" value="Orange Money"> Orange Money</label>
+                    <label><input type="radio" name="payment-method" value="Airtel Money"> Airtel Money</label>
+                </div>
+
+                <div class="payment-instructions" id="payment-instructions">
+                    💡 Veuillez effectuer le transfert de <strong><span id="instruction-amount">0</span> Ar</strong> vers le numéro :<br>
+                    <strong id="instruction-number" style="font-size:1.1rem; color:#ff6b00;">MVola : +261 34 97 981 95</strong>
+                </div>
+
+                <div class="input-group" style="margin-top: 15px;">
+                    <label for="transaction-ref"><strong>Référence de transaction SMS *</strong></label>
+                    <input type="text" id="transaction-ref" placeholder="Collez ici le code/référence reçu par SMS" required>
+                </div>
+            </div>
+
+            <div class="cart-summary">
+                <p>Sous-total : <span id="subtotal-price">0</span> Ar</p>
+                <p>Frais de livraison : <span id="delivery-price">3000</span> Ar</p>
+                <h3>Total à payer : <span id="total-price">0</span> Ar</h3>
+            </div>
+
+            <button id="btn-submit-order" class="cta-button full-width">Valider et Envoyer la Commande</button>
+        </div>
+    </div> 
+
+    <div id="drawer-overlay" class="drawer-overlay"></div>
+
+    <footer>
+        <div class="contact-info">
+            <p>📞 Téléphone : +261 34 97 981 95 | ✉️ Email : rjnasolo@gmail.com</p>
+        </div>
+        <p>&copy; 2026 - Mora Style Vente en ligne.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
