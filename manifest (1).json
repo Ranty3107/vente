@@ -4,9 +4,9 @@
   "display": "standalone",
   "name": "ranty",
   "orientation": "any",
-  "scope": "/",
+  "scope": "/vente/",
   "short_name": "ranty",
-  "start_url": "/",
+  "start_url": "/vente/",
   "theme_color": "#ffffff",
   "description": "Application de gestion des ventes"
 }
