@@ -1,3 +1,18 @@
+// --- CONFIGURATION FIREBASE ---
+const firebaseConfig = {
+  apiKey: "AIzaSyB3kgqT5_nkdH7jFsuJheqC88ejiBQWP4w",
+  authDomain: "mora-style.firebaseapp.com",
+  projectId: "mora-style",
+  storageBucket: "mora-style.firebasestorage.app",
+  messagingSenderId: "567869295599",
+  appId: "1:567869295599:web:c02cd4f06d65591b8cc41a",
+  measurementId: "G-NWZDS22FHG"
+};
+
+// Initialisation de Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
 // --- CONFIGURATION ET ETAT GLOBAL ---
 const GAS_URL = "https://script.google.com/macros/s/AKfycbxoVnCbFtevHutgwfCeNXD7e971H_gwx9E87KsVwQTQ6Oh6YERGF6a7u_i2FVMOJwMZ/exec"; 
 
@@ -42,22 +57,31 @@ function clearAuthFields() {
     });
 }
 
-// 🔥 MODIFICATION : Passage de POST à GET
-async function fetchAuth(data) {
-    try {
-        // On envoie les paramètres directement dans l'URL, sans gros JSON encodé
-        let url = GAS_URL + "?action=" + data.action;
-        if (data.email) url += "&email=" + encodeURIComponent(data.email);
-        if (data.password) url += "&password=" + encodeURIComponent(data.password);
-        if (data.nom) url += "&nom=" + encodeURIComponent(data.nom);
-
-        const response = await fetch(url, { method: 'GET' });
-        return await response.json();
-    } catch (err) {
-        console.error("Erreur Fetch API :", err);
-        return { success: false, message: "Erreur de connexion au serveur." };
+// --- OBSERVATEUR FIREBASE (Maintient la session) ---
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        // L'utilisateur est connecté
+        currentUser = {
+            nom: user.displayName || "Client",
+            email: user.email,
+            // Définition automatique du rôle admin via l'email
+            role: user.email === "rjnasolo@gmail.com" ? "admin" : "client"
+        };
+        sessionStorage.setItem('morastyle_user', JSON.stringify(currentUser));
+        updateUIPerUser();
+        clearAuthFields();
+        if(authModal) authModal.classList.add('hidden');
+        
+        // Réinitialisation des textes de boutons
+        if(document.getElementById('btn-login-submit')) document.getElementById('btn-login-submit').innerText = "Se connecter";
+        if(document.getElementById('btn-register-submit')) document.getElementById('btn-register-submit').innerText = "Créer mon compte";
+    } else {
+        // L'utilisateur est déconnecté
+        currentUser = null;
+        sessionStorage.removeItem('morastyle_user');
+        updateUIPerUser();
     }
-}
+});
 
 // --- INITIALISATION UI ---
 function updateUIPerUser() {
@@ -116,16 +140,16 @@ if(document.getElementById('btn-go-shop')) document.getElementById('btn-go-shop'
 
 if(navLogout) {
     navLogout.addEventListener('click', () => {
-        sessionStorage.removeItem('morastyle_user');
-        currentUser = null;
-        updateUIPerUser();
-        switchTab('home');
-        clearAuthFields(); 
-        alert("Vous êtes déconnecté.");
+        auth.signOut().then(() => {
+            switchTab('home');
+            alert("Vous êtes déconnecté.");
+        }).catch((error) => {
+            console.error("Erreur déconnexion:", error);
+        });
     });
 }
 
-// --- AUTHENTIFICATION ---
+// --- AUTHENTIFICATION AVEC FIREBASE ---
 if(navLogin) {
     navLogin.addEventListener('click', () => {
         clearAuthFields(); 
@@ -152,29 +176,27 @@ if(document.getElementById('show-login')) {
     });
 }
 
+// Firebase : Connexion
 if(document.getElementById('btn-login-submit')) {
     document.getElementById('btn-login-submit').addEventListener('click', async () => {
         const email = document.getElementById('login-email').value.trim();
         const pwd = document.getElementById('login-pwd').value.trim();
         if(!email || !pwd) return alert("Veuillez remplir tous les champs");
         
-        document.getElementById('btn-login-submit').innerText = "Connexion en cours...";
-        const res = await fetchAuth({ action: 'login', email: email, password: pwd });
+        const btn = document.getElementById('btn-login-submit');
+        btn.innerText = "Connexion en cours...";
         
-        if (res.success) {
-            currentUser = res.user;
-            sessionStorage.setItem('morastyle_user', JSON.stringify(currentUser));
-            updateUIPerUser();
-            clearAuthFields(); 
-            authModal.classList.add('hidden');
-            alert("Bienvenue " + currentUser.nom);
-        } else {
-            alert(res.message);
+        try {
+            await auth.signInWithEmailAndPassword(email, pwd);
+            // La suite est gérée par onAuthStateChanged()
+        } catch (error) {
+            alert("Erreur de connexion : Vérifiez vos identifiants.");
+            btn.innerText = "Se connecter";
         }
-        document.getElementById('btn-login-submit').innerText = "Se connecter";
     });
 }
 
+// Firebase : Inscription
 if(document.getElementById('btn-register-submit')) {
     document.getElementById('btn-register-submit').addEventListener('click', async () => {
         const nom = document.getElementById('reg-name').value.trim();
@@ -182,24 +204,50 @@ if(document.getElementById('btn-register-submit')) {
         const pwd = document.getElementById('reg-pwd').value.trim();
         if(!nom || !email || !pwd) return alert("Veuillez remplir tous les champs");
         
-        document.getElementById('btn-register-submit').innerText = "Création en cours...";
-        const res = await fetchAuth({ action: 'register', nom: nom, email: email, password: pwd });
+        const btn = document.getElementById('btn-register-submit');
+        btn.innerText = "Création en cours...";
         
-        if (res.success) {
-            currentUser = res.user;
-            sessionStorage.setItem('morastyle_user', JSON.stringify(currentUser));
-            updateUIPerUser();
-            clearAuthFields();
-            authModal.classList.add('hidden');
-            alert("Compte créé avec succès ! Bienvenue " + currentUser.nom);
-        } else {
-            alert(res.message);
+        try {
+            // Création du compte
+            const userCredential = await auth.createUserWithEmailAndPassword(email, pwd);
+            
+            // Mise à jour du profil avec le nom de l'utilisateur
+            await userCredential.user.updateProfile({
+                displayName: nom
+            });
+            
+            // Forcer le rafraîchissement pour l'observateur
+            await auth.currentUser.reload();
+            
+            alert("Compte créé avec succès !");
+            // La fermeture de la modale est gérée par onAuthStateChanged()
+        } catch (error) {
+            alert("Erreur lors de l'inscription : " + error.message);
+            btn.innerText = "Créer mon compte";
         }
-        document.getElementById('btn-register-submit').innerText = "Créer mon compte";
     });
 }
+const forgotPasswordLink = document.getElementById('forgot-password-link');
 
-// --- CHARGEMENT DES PRODUITS ---
+if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const emailInput = document.getElementById('login-email').value.trim();
+        
+        if (!emailInput) {
+            alert("Veuillez d'abord saisir votre adresse e-mail dans le champ de connexion ci-dessus, puis cliqué sur 'Mot de passe oublié'.");
+            return;
+        }
+
+        try {
+            await auth.sendPasswordResetEmail(emailInput);
+            alert("Un e-mail de réinitialisation vient de vous être envoyé. Vérifiez votre boîte de réception (et vos spams).");
+        } catch (error) {
+            alert("Erreur : " + error.message);
+        }
+    });
+}
+// --- CHARGEMENT DES PRODUITS (Google Apps Script) ---
 async function fetchProducts() {
     const cachedProducts = localStorage.getItem('morastyle_products');
     if (cachedProducts) {
@@ -350,7 +398,7 @@ document.getElementsByName('payment-method').forEach(radio => {
 if(document.getElementById('cart-icon')) document.getElementById('cart-icon').addEventListener('click', () => document.getElementById('cart-modal').classList.remove('hidden'));
 if(document.getElementById('close-cart')) document.getElementById('close-cart').addEventListener('click', () => document.getElementById('cart-modal').classList.add('hidden'));
 
-// --- SOUMISSION COMMANDE ---
+// --- SOUMISSION COMMANDE (Google Apps Script) ---
 async function submitOrder() {
     const btnSubmit = document.getElementById('btn-submit-order');
     if (!currentUser) {
@@ -390,7 +438,6 @@ async function submitOrder() {
         btnSubmit.textContent = "Envoi en cours...";
         btnSubmit.disabled = true;
 
-        // 🔥 MODIFICATION : Passage de POST à GET
         const url = GAS_URL + "?action=saveOrder&payload=" + encodeURIComponent(JSON.stringify(payload));
         const response = await fetch(url, {
             method: 'GET'
@@ -528,7 +575,6 @@ window.syncOrderStatus = async function(index, orderId, statusType, newValue) {
     const payload = { action: "updateStatus", orderId: orderId, type: statusType, value: newValue };
 
     try {
-        // 🔥 MODIFICATION : Passage de POST à GET
         const url = GAS_URL + "?action=updateStatus&payload=" + encodeURIComponent(JSON.stringify(payload));
         const response = await fetch(url, {
             method: 'GET'

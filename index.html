@@ -2,10 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mora Style - Boutique en Ligne</title>
-    <link rel="manifest" href="./manifest.json">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -127,7 +125,6 @@
 
     <!-- MODALE AUTHENTIFICATION (Connexion / Inscription) -->
     <div id="auth-modal" class="modal hidden">
-        <!-- Contenu identique à avant -->
         <div class="modal-content">
             <span class="close-btn" id="close-auth">&times;</span>
             <h2 id="auth-title">Connexion</h2>
@@ -138,7 +135,9 @@
                 <button id="btn-login-submit" class="cta-button full-width">Se connecter</button>
                 <p class="auth-toggle">Pas encore de compte ? <a href="#" id="show-register">S'inscrire</a></p>
             </div>
-
+<div class="auth-links">
+    <a href="#" id="forgot-password-link">Mot de passe oublié ?</a>
+</div>
             <div id="register-form" class="auth-form hidden">
                 <input type="text" id="reg-name" placeholder="Nom Complet" required>
                 <input type="email" id="reg-email" placeholder="Votre Email" required>
@@ -151,7 +150,6 @@
 
     <!-- MODALE "QUI SOMMES-NOUS ?" -->
     <div id="about-modal" class="modal hidden">
-        <!-- Contenu identique -->
         <div class="modal-content">
             <span class="close-btn" id="close-about">&times;</span>
             <h2>Qui sommes-nous ?</h2>
@@ -164,14 +162,14 @@
 
     <!-- MODALE PANIER ET COMMANDE -->
     <div id="cart-modal" class="modal hidden">
-        <!-- À ajouter dans la modale du panier (cart-modal), par exemple sous le champ 'Adresse' -->
-<div class="form-group" style="margin-top: 10px; margin-bottom: 10px;">
-    <button type="button" id="btn-get-location" style="background-color: #4285F4; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
-        📍 Partager ma position exacte (Optionnel)
-    </button>
-    <p id="location-status" style="font-size: 0.9em; margin-top: 5px; font-weight: bold;"></p>
-</div>
-        <!-- Contenu identique à avant -->
+        <!-- Partage de position -->
+        <div class="form-group" style="margin-top: 10px; margin-bottom: 10px;">
+            <button type="button" id="btn-get-location" style="background-color: #4285F4; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+                📍 Partager ma position exacte (Optionnel)
+            </button>
+            <p id="location-status" style="font-size: 0.9em; margin-top: 5px; font-weight: bold;"></p>
+        </div>
+        
         <div class="modal-content modal-large">
             <span class="close-btn" id="close-cart">&times;</span>
             <h2>Mon Panier</h2>
@@ -229,6 +227,11 @@
         <p>&copy; 2026 - Mora Style Vente en ligne.</p>
     </footer>
 
+    <!-- SDK Firebase (Versions Compatibles) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <!-- Votre script principal -->
     <script src="script.js"></script>
 </body>
 </html>
